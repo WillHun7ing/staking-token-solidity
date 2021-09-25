@@ -4,16 +4,24 @@ import { bindActionCreators } from 'redux';
 import { actionCreators } from './state';
 import { RootState } from "./state/reducers";
 import Web3 from "web3";
+import { StakingToken } from "./abi/StakingToken";
+const web3 = new Web3(Web3.givenProvider);
+const contractAddress = "0x7A8Ab7f867561F3d2ae8F1E4e383E56eCE8D4CB8";
+const stakingContract = new web3.eth.Contract(StakingToken, contractAddress);
 
 function App() {
   const dispatch = useDispatch();
   const { depositMoney, withdrawMoney, bankrupt } = bindActionCreators(actionCreators, dispatch);
   const amount = useSelector((state: RootState) => state.bank);
 
-  const web3 = new Web3(Web3.givenProvider);
-  import { StakingToken } from "./ABI/SimpleStorage";
-  const contractAddress = "0x816da4d3Fd13aB025504e5AbaD48Ad999b3A3275";
-  const storageContract = new web3.eth.Contract(SimpleStorage, contractAddress);
+  const componentDidMount = async (t) => {
+
+    const accounts = await window.ethereum.enable();
+    const account = accounts[0];
+    this.setState({ account: account });
+    console.log(accounts[0]);
+
+}
 
   return (
     <div className="App">

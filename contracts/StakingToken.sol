@@ -1,178 +1,170 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.7;
+pragma solidity >=0.8.6;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-// import "openzeppelin/contracts/utils/math/SafeMath.sol"; // Solidity 0.8.0 doesn't need to SafeMath, but it's recommended here: https://github.com/OpenZeppelin/openzeppelin-contracts/issues/2465
+// import "openzeppelin/contracts/utils/math/SafeMath.sol"; // Solidity 0.8.0 and above doesn't need to SafeMath, but it's recommended here: https://github.com/OpenZeppelin/openzeppelin-contracts/issues/2465
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-/**
- * @title Staking Token (STK)
- * @author Alberto Cuesta Canada
- * @notice Implements a basic ERC20 staking token with incentive distribution.
- */
-contract StakingToken is ERC20, Ownable {
-    // using SafeMath for uint256;
+import "./SteakableTestToken.sol";
 
-    /**
-     * @notice We usually require to know who are all the stakeholders.
-     */
-    address[] internal stakeholders;
-    // simple test for test.
-    /**
-     * @notice The stakes for each stakeholder.
-     */
-    mapping(address => uint256) internal stakes;
+contract StakingToken {
+    string public name = "Yield Farming / Token dApp";
+    SteakableTestToken public steakableTestToken;
 
-    /**
-     * @notice The accumulated rewards for each stakeholder.
-     */
-    mapping(address => uint256) internal rewards;
+    //declaring owner state variable
+    address public owner;
 
-    /**
-     * @notice The constructor for the Staking Token.
-     * @param _owner The address to receive all tokens on construction.
-     * @param _supply The amount of tokens to mint on construction.
-     */
-    constructor(address _owner, uint256 _supply)
-        ERC20("Stakeable Token", "STT")
-    {
-        _mint(_owner, _supply);
+    //declaring default APY (default 0.1% daily or 36.5% APY yearly)
+    uint256 public defaultAPY = 100;
+
+    //declaring APY for custom staking ( default 0.137% daily or 50% APY yearly)
+    uint256 public customAPY = 137;
+
+    //declaring total staked
+    uint256 public totalStaked;
+    uint256 public customTotalStaked;
+
+    //users staking balance
+    mapping(address => uint256) public stakingBalance;
+    mapping(address => uint256) public customStakingBalance;
+
+    //mapping list of users who ever staked
+    mapping(address => bool) public hasStaked;
+    mapping(address => bool) public customHasStaked;
+
+    //mapping list of users who are staking at the moment
+    mapping(address => bool) public isStakingAtm;
+    mapping(address => bool) public customIsStakingAtm;
+
+    //array of all stakers
+    address[] public stakers;
+    address[] public customStakers;
+
+    constructor(SteakableTestToken _steakableTestToken) payable {
+        steakableTestToken = _steakableTestToken;
+
+        //assigning owner on deployment
+        owner = msg.sender;
     }
 
-    // ---------- STAKES ----------
+    //stake tokens function
 
-    /**
-     * @notice A method for a stakeholder to create a stake.
-     * @param _stake The size of the stake to be created.
-     */
-    function createStake(uint256 _stake) public {
-        _burn(msg.sender, _stake);
-        if (stakes[msg.sender] == 0) addStakeholder(msg.sender);
-        stakes[msg.sender] += _stake;
-    }
+    function stakeTokens(uint256 _amount) public {
+        //must be more than 0
+        require(_amount > 0, "amount cannot be 0");
 
-    /**
-     * @notice A method for a stakeholder to remove a stake.
-     * @param _stake The size of the stake to be removed.
-     */
-    function removeStake(uint256 _stake) public {
-        stakes[msg.sender] -= _stake;
-        if (stakes[msg.sender] == 0) removeStakeholder(msg.sender);
-        _mint(msg.sender, _stake);
-    }
+        //User adding test tokens
+        steakableTestToken.transferFrom(msg.sender, address(this), _amount);
+        totalStaked = totalStaked + _amount;
 
-    /**
-     * @notice A method to retrieve the stake for a stakeholder.
-     * @param _stakeholder The stakeholder to retrieve the stake for.
-     * @return uint256 The amount of wei staked.
-     */
-    function stakeOf(address _stakeholder) public view returns (uint256) {
-        return stakes[_stakeholder];
-    }
+        //updating staking balance for user by mapping
+        stakingBalance[msg.sender] = stakingBalance[msg.sender] + _amount;
 
-    /**
-     * @notice A method to the aggregated stakes from all stakeholders.
-     * @return uint256 The aggregated stakes from all stakeholders.
-     */
-    function totalStakes() public view returns (uint256) {
-        uint256 _totalStakes = 0;
-        for (uint256 s = 0; s < stakeholders.length; s += 1) {
-            _totalStakes += stakes[stakeholders[s]];
+        //checking if user staked before or not, if NOT staked adding to array of stakers
+        if (!hasStaked[msg.sender]) {
+            stakers.push(msg.sender);
         }
-        return _totalStakes;
+
+        //updating staking status
+        hasStaked[msg.sender] = true;
+        isStakingAtm[msg.sender] = true;
     }
 
-    // ---------- STAKEHOLDERS ----------
+    //unstake tokens function
 
-    /**
-     * @notice A method to check if an address is a stakeholder.
-     * @param _address The address to verify.
-     * @return bool, uint256 Whether the address is a stakeholder,
-     * and if so its position in the stakeholders array.
-     */
-    function isStakeholder(address _address)
-        public
-        view
-        returns (bool, uint256)
-    {
-        for (uint256 s = 0; s < stakeholders.length; s += 1) {
-            if (_address == stakeholders[s]) return (true, s);
+    function unstakeTokens() public {
+        //get staking balance for user
+
+        uint256 balance = stakingBalance[msg.sender];
+
+        //amount should be more than 0
+        require(balance > 0, "amount has to be more than 0");
+
+        //transfer staked tokens back to user
+        steakableTestToken.transfer(msg.sender, balance);
+        totalStaked = totalStaked - balance;
+
+        //reseting users staking balance
+        stakingBalance[msg.sender] = 0;
+
+        //updating staking status
+        isStakingAtm[msg.sender] = false;
+    }
+
+    // different APY Pool
+    function customStaking(uint256 _amount) public {
+        require(_amount > 0, "amount cannot be 0");
+        steakableTestToken.transferFrom(msg.sender, address(this), _amount);
+        customTotalStaked = customTotalStaked + _amount;
+        customStakingBalance[msg.sender] =
+            customStakingBalance[msg.sender] +
+            _amount;
+
+        if (!customHasStaked[msg.sender]) {
+            customStakers.push(msg.sender);
         }
-        return (false, 0);
+        customHasStaked[msg.sender] = true;
+        customIsStakingAtm[msg.sender] = true;
     }
 
-    /**
-     * @notice A method to add a stakeholder.
-     * @param _stakeholder The stakeholder to add.
-     */
-    function addStakeholder(address _stakeholder) public {
-        (bool _isStakeholder, ) = isStakeholder(_stakeholder);
-        if (!_isStakeholder) stakeholders.push(_stakeholder);
+    function customUnstake() public {
+        uint256 balance = customStakingBalance[msg.sender];
+        require(balance > 0, "amount has to be more than 0");
+        steakableTestToken.transfer(msg.sender, balance);
+        customTotalStaked = customTotalStaked - balance;
+        customStakingBalance[msg.sender] = 0;
+        customIsStakingAtm[msg.sender] = false;
     }
 
-    /**
-     * @notice A method to remove a stakeholder.
-     * @param _stakeholder The stakeholder to remove.
-     */
-    function removeStakeholder(address _stakeholder) public {
-        (bool _isStakeholder, uint256 s) = isStakeholder(_stakeholder);
-        if (_isStakeholder) {
-            stakeholders[s] = stakeholders[stakeholders.length - 1];
-            stakeholders.pop();
-        }
-    }
+    //airdropp tokens
+    function redistributeRewards() public {
+        //only owner can issue airdrop
+        require(msg.sender == owner, "Only contract creator can redistribute");
 
-    // ---------- REWARDS ----------
+        //doing drop for all addresses
+        for (uint256 i = 0; i < stakers.length; i++) {
+            address recipient = stakers[i];
 
-    /**
-     * @notice A method to allow a stakeholder to check his rewards.
-     * @param _stakeholder The stakeholder to check rewards for.
-     */
-    function rewardOf(address _stakeholder) public view returns (uint256) {
-        return rewards[_stakeholder];
-    }
+            //calculating daily apy for user
+            uint256 balance = stakingBalance[recipient] * defaultAPY;
+            balance = balance / 100000;
 
-    /**
-     * @notice A method to the aggregated rewards from all stakeholders.
-     * @return uint256 The aggregated rewards from all stakeholders.
-     */
-    function totalRewards() public view returns (uint256) {
-        uint256 _totalRewards = 0;
-        for (uint256 s = 0; s < stakeholders.length; s += 1) {
-            _totalRewards += rewards[stakeholders[s]];
-        }
-        return _totalRewards;
-    }
-
-    /**
-     * @notice A simple method that calculates the rewards for each stakeholder.
-     * @param _stakeholder The stakeholder to calculate rewards for.
-     */
-    function calculateReward(address _stakeholder)
-        public
-        view
-        returns (uint256)
-    {
-        return stakes[_stakeholder] / 100;
-    }
-
-    /**
-     * @notice A method to distribute rewards to all stakeholders.
-     */
-    function distributeRewards() public onlyOwner {
-        for (uint256 s = 0; s < stakeholders.length; s += 1) {
-            address stakeholder = stakeholders[s];
-            uint256 reward = calculateReward(stakeholder);
-            rewards[stakeholder] += reward;
+            if (balance > 0) {
+                steakableTestToken.transfer(recipient, balance);
+            }
         }
     }
 
-    /**
-     * @notice A method to allow a stakeholder to withdraw his rewards.
-     */
-    function withdrawReward() public {
-        uint256 reward = rewards[msg.sender];
-        rewards[msg.sender] = 0;
-        _mint(msg.sender, reward);
+    //customAPY airdrop
+    function customRewards() public {
+        require(msg.sender == owner, "Only contract creator can redistribute");
+        for (uint256 i = 0; i < customStakers.length; i++) {
+            address recipient = customStakers[i];
+            uint256 balance = customStakingBalance[recipient] * customAPY;
+            balance = balance / 100000;
+
+            if (balance > 0) {
+                steakableTestToken.transfer(recipient, balance);
+            }
+        }
+    }
+
+    //change APY value for custom staking
+    function changeAPY(uint256 _value) public {
+        //only owner can issue airdrop
+        require(msg.sender == owner, "Only contract creator can change APY");
+        require(
+            _value > 0,
+            "APY value has to be more than 0, try 100 for (0.100% daily) instead"
+        );
+        customAPY = _value;
+    }
+
+    //cliam test 1000 Tst (for testing purpose only !!)
+    function claimTst() public {
+        address recipient = msg.sender;
+        uint256 tst = 1000000000000000000000;
+        uint256 balance = tst;
+        steakableTestToken.transfer(recipient, balance);
     }
 }
