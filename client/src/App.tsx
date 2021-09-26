@@ -1,7 +1,7 @@
-import './App.css';
+import "./App.css";
 import { useDispatch, useSelector } from "react-redux";
-import { bindActionCreators } from 'redux';
-import { actionCreators } from './state';
+import { bindActionCreators } from "redux";
+import { actionCreators } from "./state";
 import { RootState } from "./state/reducers";
 import Web3 from "web3";
 import { StakingToken } from "./abi/StakingToken";
@@ -21,7 +21,31 @@ function App() {
     this.setState({ account: account });
     console.log(accounts[0]);
 
-}
+  }
+
+  setValue = async (t) => {
+
+    const val = this.value.current.value;
+    const gas = await stakingContract.methods.set(val).estimateGas();
+
+    const result = await stakingContract.methods.set(val).send({
+
+      from: this.state.account,
+
+      gas,
+
+    });
+  };
+
+  getValue = async (t) => {
+
+    const result = await stakingContract.methods.get().call({
+
+      from: this.state.account,
+
+    });
+    this.setState({ storedValue: result });
+  }
 
   return (
     <div className="App">

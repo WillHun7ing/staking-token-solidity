@@ -5,11 +5,11 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 // import "openzeppelin/contracts/utils/math/SafeMath.sol"; // Solidity 0.8.0 and above doesn't need to SafeMath, but it's recommended here: https://github.com/OpenZeppelin/openzeppelin-contracts/issues/2465
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "./SteakableTestToken.sol";
+import "./TestToken.sol";
 
 contract StakingToken {
     string public name = "Yield Farming / Token dApp";
-    SteakableTestToken public steakableTestToken;
+    TestToken public testToken;
 
     //declaring owner state variable
     address public owner;
@@ -40,8 +40,8 @@ contract StakingToken {
     address[] public stakers;
     address[] public customStakers;
 
-    constructor(SteakableTestToken _steakableTestToken) payable {
-        steakableTestToken = _steakableTestToken;
+    constructor(TestToken _testToken) public payable {
+        testToken = _testToken;
 
         //assigning owner on deployment
         owner = msg.sender;
@@ -54,7 +54,7 @@ contract StakingToken {
         require(_amount > 0, "amount cannot be 0");
 
         //User adding test tokens
-        steakableTestToken.transferFrom(msg.sender, address(this), _amount);
+        testToken.transferFrom(msg.sender, address(this), _amount);
         totalStaked = totalStaked + _amount;
 
         //updating staking balance for user by mapping
@@ -81,7 +81,7 @@ contract StakingToken {
         require(balance > 0, "amount has to be more than 0");
 
         //transfer staked tokens back to user
-        steakableTestToken.transfer(msg.sender, balance);
+        testToken.transfer(msg.sender, balance);
         totalStaked = totalStaked - balance;
 
         //reseting users staking balance
@@ -94,7 +94,7 @@ contract StakingToken {
     // different APY Pool
     function customStaking(uint256 _amount) public {
         require(_amount > 0, "amount cannot be 0");
-        steakableTestToken.transferFrom(msg.sender, address(this), _amount);
+        testToken.transferFrom(msg.sender, address(this), _amount);
         customTotalStaked = customTotalStaked + _amount;
         customStakingBalance[msg.sender] =
             customStakingBalance[msg.sender] +
@@ -110,7 +110,7 @@ contract StakingToken {
     function customUnstake() public {
         uint256 balance = customStakingBalance[msg.sender];
         require(balance > 0, "amount has to be more than 0");
-        steakableTestToken.transfer(msg.sender, balance);
+        testToken.transfer(msg.sender, balance);
         customTotalStaked = customTotalStaked - balance;
         customStakingBalance[msg.sender] = 0;
         customIsStakingAtm[msg.sender] = false;
@@ -130,7 +130,7 @@ contract StakingToken {
             balance = balance / 100000;
 
             if (balance > 0) {
-                steakableTestToken.transfer(recipient, balance);
+                testToken.transfer(recipient, balance);
             }
         }
     }
@@ -144,7 +144,7 @@ contract StakingToken {
             balance = balance / 100000;
 
             if (balance > 0) {
-                steakableTestToken.transfer(recipient, balance);
+                testToken.transfer(recipient, balance);
             }
         }
     }
@@ -165,6 +165,6 @@ contract StakingToken {
         address recipient = msg.sender;
         uint256 tst = 1000000000000000000000;
         uint256 balance = tst;
-        steakableTestToken.transfer(recipient, balance);
+        testToken.transfer(recipient, balance);
     }
 }
