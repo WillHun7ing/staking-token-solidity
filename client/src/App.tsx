@@ -23,29 +23,35 @@ function App() {
 
   }
 
-  setValue = async (t) => {
+  // setValue = async (t) => {
 
-    const val = this.value.current.value;
-    const gas = await stakingContract.methods.set(val).estimateGas();
+  //   const val = this.value.current.value;
+  //   const gas = await stakingContract.methods.set(val).estimateGas();
 
-    const result = await stakingContract.methods.set(val).send({
+  //   const result = await stakingContract.methods.set(val).send({
 
-      from: this.state.account,
+  //     from: this.state.account,
 
-      gas,
+  //     gas,
 
-    });
-  };
+  //   });
+  // };
 
-  getValue = async (t) => {
+  // getValue = async (t) => {
 
-    const result = await stakingContract.methods.get().call({
+  //   const result = await stakingContract.methods.get().call({
 
-      from: this.state.account,
+  //     from: this.state.account,
 
-    });
-    this.setState({ storedValue: result });
-  }
+  //   });
+  //   this.setState({ storedValue: result });
+  // }
+
+  // const fetcher = (library) => (...args) => {
+  //   const [method, ...params] = args
+  //   console.log(method, params)
+  //   return library[method](...params)
+  // }
 
   return (
     <div className="App">
@@ -53,6 +59,7 @@ function App() {
       <button onClick={() => depositMoney(5)}>Deposit</button>
       <button onClick={() => withdrawMoney(5)}>Withdraw</button>
       <button onClick={() => bankrupt(5)}>Bankrupt</button>
+      <button onClick={() => (5)}>Bankrupt</button>
     </div>
   );
 }
