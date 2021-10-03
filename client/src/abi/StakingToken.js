@@ -1,5 +1,4 @@
-
-  const StakingToken = [
+const StakingToken =  [
     {
       "inputs": [
         {
@@ -286,6 +285,20 @@
     },
     {
       "inputs": [],
+      "name": "getTotalStake",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [],
       "name": "unstakeTokens",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -347,4 +360,4 @@
     }
   ];
 
-  export default StakingToken;
+export default StakingToken;

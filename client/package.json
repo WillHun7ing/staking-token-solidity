@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/index.html",
   "scripts": {
+    //cp ../smart-contract/build/contracts/TestToken.json ./src/abi/ && cp ../smart-contract/build/contracts/StakingToken.json ./src/abi/ && 
     "start": "parcel src/index.html",
     "build": "parcel build src/index.html",
     "serve": "serve dist",
@@ -34,11 +35,12 @@
     "@web3-react/core": "^6.0.9",
     "@web3-react/injected-connector": "^6.0.7",
     "@web3-react/network-connector": "^6.0.9",
+    "bootstrap": "^5.1.1",
     "core-js": "^3.18.1",
     "ether-swr": "^0.3.0",
     "fast-memoize": "^2.5.2",
     "react": "^16.11.0",
-    "react-bootstrap": "^1.6.4",
+    "react-bootstrap": "^2.0.0-rc.0",
     "react-cryptocoins": "^1.0.11",
     "react-dom": "^16.13.1",
     "react-is": "^16.13.1",

@@ -70,6 +70,12 @@ contract StakingToken {
         isStakingAtm[msg.sender] = true;
     }
 
+    function getTotalStake() public view returns (uint256) {
+        uint256 totalStaked = stakingBalance[msg.sender];
+
+        return totalStaked;
+    }
+
     //unstake tokens function
 
     function unstakeTokens() public {
