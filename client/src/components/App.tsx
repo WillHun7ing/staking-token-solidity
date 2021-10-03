@@ -34,7 +34,7 @@ import Web3 from 'web3';
 import StakingToken from '../abi/StakingToken';
 const web3 = new Web3(Web3.givenProvider);
 
-const contractAddress = '0x00B37FFA71a6416dec3DF017FeFFCb5ec9aFc8b5';
+const contractAddress = '0xcAD41F63eA31F4b89f1cAA134f5fEB172dFe85D7';
 
 const stakingContract = new web3.eth.Contract(StakingToken, contractAddress);
 class App extends Component {
@@ -52,10 +52,14 @@ class App extends Component {
 
   componentDidMount = async (t) => {
     const accounts = await window.ethereum.enable();
+    console.log(accounts);
+    const account_ = accounts[0];
 
-    const account = accounts[0];
-
-    this.setState({ account: account });
+    this.setState((prevState) => {
+      return {
+        account: account_,
+      };
+    });
   };
 
   setValue = async (t) => {
@@ -75,9 +79,22 @@ class App extends Component {
       from: this.state.account,
     });
 
-    this.setState({ storedValue: result });
+    this.setState((prevState) => {
+      return {
+        storedValue: result,
+      };
+    });
   };
 
+  stakeToken = async (t) => {
+    const val = this.value.current.value;
+    console.log('this.value', val);
+    const gas = await stakingContract.methods.stakeTokens(val).estimateGas();
+    const result = await stakingContract.methods.stakeTokens(val).send({
+      from: this.state.account,
+      gas,
+    });
+  };
   render() {
     return (
       <div>
@@ -106,7 +123,7 @@ class App extends Component {
                 <Button
                   variant="secondary"
                   id="button-addon2"
-                  onClick={this.setValue}
+                  onClick={this.stakeToken}
                 >
                   Store
                 </Button>

@@ -49,7 +49,7 @@ contract StakingToken {
 
     //stake tokens function
 
-    function stakeTokens(uint256 _amount) public {
+    function stakeTokens(uint256 _amount) public payable {
         //must be more than 0
         require(_amount > 0, "amount cannot be 0");
 

@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.html",
   "scripts": {
-    "start": "cp ../smart-contract/build/contracts/StakingToken.json ./src/abi && parcel src/index.html",
+    "start": "parcel src/index.html",
     "build": "parcel build src/index.html",
     "serve": "serve dist",
     "test": "jest --verbose",
