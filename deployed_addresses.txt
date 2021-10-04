@@ -1,0 +1,28 @@
+TestToken Contract:
+   ---------------------
+   > transaction hash:    0x374af1f1c8bc5a89c6424185b05cca3378ce695cd2db2f8828d42e6bbfa9cc7a
+   > Blocks: 6            Seconds: 95
+   > contract address:    0xB01e4883Cba6722d6D6d1c43E6666186EF037836
+   > block number:        9401046
+   > block timestamp:     1633273267
+   > account:             0xd3eABA18Ce9e02A78b622E454E0D83EDDD9649A0
+   > balance:             11.730498496839134636
+   > gas used:            865476 (0xd34c4)
+   > gas price:           1.000000008 gwei
+   > value sent:          0 ETH
+   > total cost:          0.000865476006923808 ETH
+
+
+StakingToken Contract:
+   ------------------------
+   > transaction hash:    0xb11ec0c491f6a52cdaf0b58aeeabe7b8e2771636686825a18634b4ed1ce8454c
+   > Blocks: 2            Seconds: 29
+   > contract address:    0x1223E0c74Ac0fC6f84811117cF39554c98cb8a8a
+   > block number:        9401054
+   > block timestamp:     1633273388
+   > account:             0xd3eABA18Ce9e02A78b622E454E0D83EDDD9649A0
+   > balance:             11.728561051821697631
+   > gas used:            1937445 (0x1d9025)
+   > gas price:           1.000000009 gwei
+   > value sent:          0 ETH
+   > total cost:          0.001937445017437005 ETH
