@@ -1,0 +1,25 @@
+.btn {
+  background-color: gray;
+  font-size: large;
+  border-radius: 5px;
+  border: 1px solid gray;
+  margin: 10px;
+  padding: 10px;
+}
+
+.form-control {
+  margin: 10px;
+}
+
+form {
+  padding: 10px;
+  margin: 10px;
+}
+
+#root {
+  margin-top: 100px;
+}
+
+.badge {
+  margin: 10px;
+}
