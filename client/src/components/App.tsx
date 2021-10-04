@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Styles.css';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Row,
@@ -44,11 +44,8 @@ const App = () => {
   const [myStake, setMyStake] = useState<unknown[]>([0, 0]);
   const [appStatus, setAppStatus] = useState<boolean>(true);
   const [loader, setLoader] = useState<boolean>(false);
-  const [userBalance, setUserBalance] = useState<unknown>('0');
   const [apy, setApy] = useState<number[]>([0, 0]);
   const [page, setPage] = useState<number>(1);
-
-  inputValue = useRef(null);
 
   const fetchDataFromBlockchain = async () => {
     const web3 = new Web3(Web3.givenProvider);
@@ -141,14 +138,13 @@ const App = () => {
   /////////////////////////////////////
 
   const stakeHandler = () => {
-    const stakeNumber = inputValue.current.value;
     if (!appStatus) {
     } else {
-      if (!stakeNumber || stakeNumber === '0' || stakeNumber < 0) {
+      if (!inputValue || inputValue === '0' || inputValue < 0) {
         setInputValue('');
       } else {
         setLoader(true);
-        let convertToWei = web3Instance.utils.toWei(stakeNumber, 'Ether');
+        let convertToWei = web3Instance.utils.toWei(inputValue, 'Ether');
         //aproving tokens for spending
         testTokenContract.methods
           .approve(tokenStakingContract._address, convertToWei)
@@ -309,7 +305,8 @@ const App = () => {
       <Row>
         <InputGroup className="mb-3">
           <FormControl
-            ref={inputValue}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             placeholder="Value to Store"
             aria-label="Value to Store"
             aria-describedby="basic-addon2"
