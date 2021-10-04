@@ -1,4 +1,7 @@
-TestToken Contract:
+--> Test Net: Rinkeby
+
+
+--> TestToken Contract:
    ---------------------
    > transaction hash:    0x374af1f1c8bc5a89c6424185b05cca3378ce695cd2db2f8828d42e6bbfa9cc7a
    > Blocks: 6            Seconds: 95
@@ -13,7 +16,7 @@ TestToken Contract:
    > total cost:          0.000865476006923808 ETH
 
 
-StakingToken Contract:
+--> StakingToken Contract:
    ------------------------
    > transaction hash:    0xb11ec0c491f6a52cdaf0b58aeeabe7b8e2771636686825a18634b4ed1ce8454c
    > Blocks: 2            Seconds: 29
